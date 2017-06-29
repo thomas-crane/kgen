@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
@@ -39,30 +41,31 @@ try {
     }
 } catch (error) {
     console.log(chalk.red(error.message));
-    return;
+    process.exit();
 }
 
+let modulePath = require.resolve('kgen').replace('index.js', '');
 // Copy Lib K Relay.
-fs.createReadStream('src/lib/Lib K Relay.dll').pipe(fs.createWriteStream(path.join(outDir, 'Lib K Relay.dll')));
+fs.createReadStream(path.join(modulePath, 'src/lib/Lib K Relay.dll')).pipe(fs.createWriteStream(path.join(outDir, 'Lib K Relay.dll')));
 
 // Generate directories.
 fs.mkdirSync(path.join(outDir, 'Properties'));
 
 // Generate Assembly info.
 let guid = b();
-let assemblyInfo = fs.readFileSync('src/template/nst-AssemblyInfo.cs', { encoding: 'utf8', flag: 'r' });
+let assemblyInfo = fs.readFileSync(path.join(modulePath, 'src/template/nst-AssemblyInfo.cs'), { encoding: 'utf8', flag: 'r' });
 assemblyInfo = assemblyInfo.replace(/%NAME%/g, pluginName);
 assemblyInfo = assemblyInfo.replace(/%GUID%/g, guid);
 fs.writeFileSync(path.join(outDir, 'Properties', 'AssemblyInfo.cs'), assemblyInfo, { encoding: 'utf8', flag: 'w' });
 
 // Generate Project file.
-let projectFile = fs.readFileSync('src/template/nst-Project.csproj', { encoding: 'utf8', flag: 'r' });
+let projectFile = fs.readFileSync(path.join(modulePath, 'src/template/nst-Project.csproj'), { encoding: 'utf8', flag: 'r' });
 projectFile = projectFile.replace(/%NAME%/g, pluginName);
 projectFile = projectFile.replace(/%GUID%/g, guid.toUpperCase());
 fs.writeFileSync(path.join(outDir, pluginName + '.csproj'), projectFile, { encoding: 'utf8', flag: 'w' });
 
 // Generate Plugin.cs
-let pluginFile = fs.readFileSync('src/template/t-Plugin.cs', { encoding: 'utf8', flag: 'r' });
+let pluginFile = fs.readFileSync(path.join(modulePath, 'src/template/t-Plugin.cs'), { encoding: 'utf8', flag: 'r' });
 pluginFile = pluginFile.replace(/%NAME%/g, pluginName);
 pluginFile = pluginFile.replace(/%AUTHOR%/g, pluginAuthor);
 fs.writeFileSync(path.join(outDir, 'Plugin.cs'), pluginFile, { encoding: 'utf8', flag: 'w' });
