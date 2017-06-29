@@ -21,7 +21,7 @@ try {
 }
 
 // TODO: implement customisable output directory.
-let outDir = path.join(process.cwd(), 'out', pluginName);
+let outDir = path.join(process.cwd(), pluginName);
 
 // Make sure output directory exists.
 try {
