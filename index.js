@@ -18,8 +18,14 @@ try {
     checkFlags();
 } catch (error) {
     console.log(error.message);
-    return;
+    process.exit();
 }
+
+console.log(chalk.cyan("\nKGen Plugin Boilerplate Generator by tcrane"));
+console.log("Generating project with settings:");
+console.log("Structured: " + (structured ? "yes" : "no"));
+console.log("      Name: " + pluginName);
+console.log("    Author: " + pluginAuthor);
 
 // TODO: implement customisable output directory.
 let outDir = path.join(process.cwd(), pluginName);
@@ -29,7 +35,7 @@ let filePrefix = structured ? 'st-' : 'nst-';
 try {
     fs.statSync(outDir);
 } catch (error) {
-    console.log("[KGen] Creating directory: " + outDir);
+    console.log("\n[KGen] Creating directory: " + outDir);
     fs.mkdirSync(outDir);
 }
 
@@ -87,8 +93,7 @@ fs.writeFileSync(pluginFilePath, pluginFile, { encoding: 'utf8', flag: 'w' });
 
 console.log(chalk.green('[KGen] Done!'));
 console.log(chalk.green('----------------'));
-console.log('Project Name: ' + pluginName);
-console.log('Project Author: ' + pluginAuthor);
+console.log("Project '" + pluginName + "' generated at: " + outDir);
 
 function checkFlags() {
     let args = process.argv;
