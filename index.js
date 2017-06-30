@@ -5,13 +5,12 @@ const fs = require('fs');
 const path = require('path');
 
 // All recognized flags.
-const flags = ['-n', '--name', '-a', '--author'];
+const flags = ['-n', '--name', '-a', '--author', '-s', '--structured'];
 
 // Properties to be set by flags.
 var pluginName;
 var pluginAuthor;
 
-// TODO: implement.
 var structured;
 
 // Check if all flags are valid.
@@ -24,6 +23,7 @@ try {
 
 // TODO: implement customisable output directory.
 let outDir = path.join(process.cwd(), pluginName);
+let filePrefix = structured ? 'st-' : 'nst-';
 
 // Make sure output directory exists.
 try {
@@ -45,30 +45,45 @@ try {
 }
 
 let modulePath = require.resolve('kgen').replace('index.js', '');
-// Copy Lib K Relay.
-fs.createReadStream(path.join(modulePath, 'src/lib/Lib K Relay.dll')).pipe(fs.createWriteStream(path.join(outDir, 'Lib K Relay.dll')));
 
 // Generate directories.
 fs.mkdirSync(path.join(outDir, 'Properties'));
+if(structured) {
+    fs.mkdirSync(path.join(outDir, 'Core'));
+    fs.mkdirSync(path.join(outDir, 'Dependencies'));
+    fs.mkdirSync(path.join(outDir, 'Services'));
+    fs.mkdirSync(path.join(outDir, 'Helpers'));
+    fs.mkdirSync(path.join(outDir, 'Data'));
+    fs.mkdirSync(path.join(outDir, 'Data', 'Models'));
+    fs.mkdirSync(path.join(outDir, 'Data', 'Enums'));
+    fs.mkdirSync(path.join(outDir, 'Data', 'Events'));
+    fs.mkdirSync(path.join(outDir, 'Data', 'Interfaces'));
+}
+
+// Copy Lib K Relay.
+let libPath = structured ? path.join(outDir, 'Dependencies', 'Lib K Relay.dll') : path.join(outDir, 'Lib K Relay.dll');
+fs.createReadStream(path.join(modulePath, 'src', 'template', 'Lib K Relay.dll')).pipe(fs.createWriteStream(libPath));
 
 // Generate Assembly info.
 let guid = b();
-let assemblyInfo = fs.readFileSync(path.join(modulePath, 'src/template/nst-AssemblyInfo.cs'), { encoding: 'utf8', flag: 'r' });
+let assemblyInfo = fs.readFileSync(path.join(modulePath, 'src', 'template', (filePrefix + 'AssemblyInfo.cs')), { encoding: 'utf8', flag: 'r' });
 assemblyInfo = assemblyInfo.replace(/%NAME%/g, pluginName);
 assemblyInfo = assemblyInfo.replace(/%GUID%/g, guid);
 fs.writeFileSync(path.join(outDir, 'Properties', 'AssemblyInfo.cs'), assemblyInfo, { encoding: 'utf8', flag: 'w' });
 
 // Generate Project file.
-let projectFile = fs.readFileSync(path.join(modulePath, 'src/template/nst-Project.csproj'), { encoding: 'utf8', flag: 'r' });
+let projectFile = fs.readFileSync(path.join(modulePath, 'src', 'template', (filePrefix + 'Project.csproj')), { encoding: 'utf8', flag: 'r' });
 projectFile = projectFile.replace(/%NAME%/g, pluginName);
 projectFile = projectFile.replace(/%GUID%/g, guid.toUpperCase());
 fs.writeFileSync(path.join(outDir, pluginName + '.csproj'), projectFile, { encoding: 'utf8', flag: 'w' });
 
 // Generate Plugin.cs
-let pluginFile = fs.readFileSync(path.join(modulePath, 'src/template/t-Plugin.cs'), { encoding: 'utf8', flag: 'r' });
+let pluginFile = fs.readFileSync(path.join(modulePath, 'src', 'template', (filePrefix + 'Plugin.cs')), { encoding: 'utf8', flag: 'r' });
 pluginFile = pluginFile.replace(/%NAME%/g, pluginName);
 pluginFile = pluginFile.replace(/%AUTHOR%/g, pluginAuthor);
-fs.writeFileSync(path.join(outDir, 'Plugin.cs'), pluginFile, { encoding: 'utf8', flag: 'w' });
+let pluginFilePath = structured ? path.join(outDir, 'Core', 'Plugin.cs') : path.join(outDir, 'Plugin.cs');
+fs.writeFileSync(pluginFilePath, pluginFile, { encoding: 'utf8', flag: 'w' });
+
 
 console.log(chalk.green('[KGen] Done!'));
 console.log(chalk.green('----------------'));
