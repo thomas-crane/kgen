@@ -12,10 +12,13 @@ To check if you already have these programs installed or to verify the installat
 + `npm -v` to check the version of npm installed, and
 + `git -v` to check the version of git installed.
 
-Once Node.js is installed, kgen can be installed in 3 lines:
+Once Node.js is installed, kgen can be installed in 3 commands:
+```
+Current Directory | Command to use
+-----------------------------------
+c:\documents      | git pull https://github.com/thomas-crane/kgen.git
+c:\documents      | cd kgen
+c:\documents\kgen | npm install -g
+```
 
-`git pull https://github.com/thomas-crane/kgen.git`
-`cd kgen`
-`npm install -g`
-
-// TODO: usage.
+// TODO: usage/contributing/etc.
