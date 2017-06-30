@@ -21,7 +21,7 @@ try {
     process.exit();
 }
 
-console.log(chalk.cyan("\nKGen Plugin Boilerplate Generator by tcrane"));
+console.log(chalk.cyan("\nKRelay Plugin Boilerplate Generator by tcrane"));
 console.log("Generating project with settings:");
 console.log("Structured: " + (structured ? "yes" : "no"));
 console.log("      Name: " + pluginName);
