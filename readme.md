@@ -20,5 +20,6 @@ c:\documents      | git pull https://github.com/thomas-crane/kgen.git
 c:\documents      | cd kgen
 c:\documents\kgen | npm install -g
 ```
+> Note: kgen does ___not___ have to be installed in the documents folder. The code above is just an example.
 
 // TODO: usage/contributing/etc.
